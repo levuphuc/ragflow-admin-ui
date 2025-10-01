@@ -10,7 +10,9 @@ import {
   Trash2,
   AlertCircle,
   Calendar,
-  Database
+  Database,
+  LayoutGrid,
+  Table2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -55,6 +57,7 @@ interface Dataset {
 export default function Datasets() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null)
+  const [viewMode, setViewMode] = useState<"card" | "table">("table")
   const [datasets, setDatasets] = useState<Dataset[]>([
     {
       id: "ds-001",
@@ -279,7 +282,7 @@ export default function Datasets() {
         </Card>
       </div>
 
-      {/* Filters */}
+      {/* Filters & View Toggle */}
       <Card className="bg-gradient-card shadow-card">
         <CardContent className="pt-6">
           <div className="flex flex-col gap-4 md:flex-row">
@@ -292,41 +295,121 @@ export default function Datasets() {
                 className="pl-10"
               />
             </div>
-            <Button variant="outline">
-              <Filter className="h-4 w-4 mr-2" />
-              Bộ lọc
-            </Button>
+            <div className="flex gap-2">
+              <div className="flex border rounded-lg">
+                <Button
+                  variant={viewMode === "card" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("card")}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "table" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("table")}
+                >
+                  <Table2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <Button variant="outline">
+                <Filter className="h-4 w-4 mr-2" />
+                Bộ lọc
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Datasets Table */}
-      <Card className="bg-gradient-card shadow-card">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Tất cả Datasets</CardTitle>
-              <CardDescription>
-                {filteredDatasets.length} dataset được tìm thấy
-              </CardDescription>
+      {/* Datasets Display */}
+      {filteredDatasets.length === 0 ? (
+        <Card className="bg-gradient-card shadow-card">
+          <CardContent className="text-center py-12">
+            <Database className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-medium mb-2">Chưa có dataset nào</h3>
+            <p className="text-muted-foreground mb-4">
+              Bắt đầu bằng cách tạo một bộ tri thức cho chatbot của bạn
+            </p>
+            <CreateDatasetModal onCreateDataset={handleCreateDataset} />
+          </CardContent>
+        </Card>
+      ) : viewMode === "card" ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredDatasets.map((dataset) => (
+            <Card 
+              key={dataset.id}
+              className="bg-gradient-card shadow-card hover:shadow-card-hover transition-all cursor-pointer"
+              onClick={() => setSelectedDataset(dataset)}
+            >
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-lg mb-2">{dataset.name}</CardTitle>
+                    <CardDescription className="line-clamp-2">
+                      {dataset.description}
+                    </CardDescription>
+                  </div>
+                  <StatusBadge status={dataset.status}>
+                    {dataset.status === "indexed" ? "Indexed" :
+                     dataset.status === "processing" ? "Processing" : "Failed"}
+                  </StatusBadge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Domain:</span>
+                    <Badge variant="outline">{dataset.domain}</Badge>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Files:</span>
+                    <span className="font-medium">{dataset.files} files</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Chunks:</span>
+                    <span className="font-medium">{dataset.chunks || 0} / {dataset.totalChunks || 0}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Chatbots:</span>
+                    <span className="font-medium">{dataset.chatbots}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {dataset.tags.slice(0, 3).map((tag) => (
+                      <Badge key={tag} variant="secondary" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                    {dataset.tags.length > 3 && (
+                      <Badge variant="secondary" className="text-xs">
+                        +{dataset.tags.length - 3}
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="text-xs text-muted-foreground pt-2 border-t">
+                    Tạo: {dataset.createdAt} • Cập nhật: {dataset.lastUpdated}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <Card className="bg-gradient-card shadow-card">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Tất cả Datasets</CardTitle>
+                <CardDescription>
+                  {filteredDatasets.length} dataset được tìm thấy
+                </CardDescription>
+              </div>
+              <Button variant="outline" size="sm">
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Làm mới
+              </Button>
             </div>
-            <Button variant="outline" size="sm">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Làm mới
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {filteredDatasets.length === 0 ? (
-            <div className="text-center py-12">
-              <Database className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">Chưa có dataset nào</h3>
-              <p className="text-muted-foreground mb-4">
-                Bắt đầu bằng cách tạo một bộ tri thức cho chatbot của bạn
-              </p>
-              <CreateDatasetModal onCreateDataset={handleCreateDataset} />
-            </div>
-          ) : (
+          </CardHeader>
+          <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -462,9 +545,9 @@ export default function Datasets() {
                 ))}
               </TableBody>
             </Table>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
