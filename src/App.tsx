@@ -7,6 +7,7 @@ import { ThemeProvider } from "./components/theme-provider";
 import { AdminLayout } from "./components/layout/AdminLayout";
 import Dashboard from "./pages/Dashboard";
 import Datasets from "./pages/Datasets";
+import Chatbots from "./pages/Chatbots";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,9 +40,7 @@ const App = () => (
           } />
           <Route path="/chatbots" element={
             <AdminLayout>
-              <div className="flex items-center justify-center h-96">
-                <p className="text-muted-foreground">Chatbots module đang phát triển...</p>
-              </div>
+              <Chatbots />
             </AdminLayout>
           } />
           <Route path="/agents" element={
