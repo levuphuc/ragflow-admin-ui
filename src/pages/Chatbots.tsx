@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import { ConfigureChatbotModal } from "@/components/chatbots/ConfigureChatbotModal";
 import { ChatHistoryViewer } from "@/components/chatbots/ChatHistoryViewer";
+import { CreateChatbotModal } from "@/components/chatbots/CreateChatbotModal";
 
 interface Chatbot {
   id: string;
@@ -53,7 +54,8 @@ export default function Chatbots() {
   const [selectedChatbot, setSelectedChatbot] = useState<Chatbot | null>(null);
   const [configModalOpen, setConfigModalOpen] = useState(false);
   const [historyViewerOpen, setHistoryViewerOpen] = useState(false);
-  const [chatbots] = useState<Chatbot[]>(mockChatbots);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [chatbots, setChatbots] = useState<Chatbot[]>(mockChatbots);
 
   const filteredChatbots = chatbots.filter((bot) =>
     bot.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -69,6 +71,19 @@ export default function Chatbots() {
     setHistoryViewerOpen(true);
   };
 
+  const handleCreateChatbot = (name: string) => {
+    const newChatbot: Chatbot = {
+      id: String(chatbots.length + 1),
+      name,
+      voiceRole: "Nam thanh niên",
+      languageModel: "ChatGPT Nano",
+      lastChat: "Chưa có",
+      language: "Vietnamese",
+      status: "inactive",
+    };
+    setChatbots([...chatbots, newChatbot]);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -79,7 +94,7 @@ export default function Chatbots() {
             Quản lý và cấu hình chatbot AI của bạn
           </p>
         </div>
-        <Button>
+        <Button onClick={() => setCreateModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           Tạo Chatbot Mới
         </Button>
@@ -116,7 +131,7 @@ export default function Chatbots() {
       {viewMode === "card" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredChatbots.map((chatbot) => (
-            <Card key={chatbot.id} className="hover:shadow-lg transition-shadow">
+            <Card key={chatbot.id} className="transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-primary/50">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -228,6 +243,12 @@ export default function Chatbots() {
       )}
 
       {/* Modals */}
+      <CreateChatbotModal
+        open={createModalOpen}
+        onOpenChange={setCreateModalOpen}
+        onCreateChatbot={handleCreateChatbot}
+      />
+      
       {selectedChatbot && (
         <>
           <ConfigureChatbotModal
