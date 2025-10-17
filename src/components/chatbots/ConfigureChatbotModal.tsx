@@ -144,6 +144,16 @@ export function ConfigureChatbotModal({
 
           {/* General Settings Tab */}
           <TabsContent value="general" className="space-y-6 mt-6">
+            {/* Assistant Name */}
+            <div className="space-y-2">
+              <Label htmlFor="assistant-name">Assistant Name</Label>
+              <Input
+                id="assistant-name"
+                defaultValue={chatbot.name}
+                placeholder="Nhập tên trợ lý..."
+              />
+            </div>
+
             {/* Avatar Upload */}
             <div className="space-y-2">
               <Label htmlFor="avatar">Avatar</Label>
@@ -158,23 +168,6 @@ export function ConfigureChatbotModal({
               </div>
             </div>
 
-            {/* Role Template */}
-            <div className="space-y-3">
-              <Label>Role Template</Label>
-              <div className="flex flex-wrap gap-2">
-                {roleTemplates.map((template) => (
-                  <Badge
-                    key={template.name}
-                    variant={selectedRole === template.name ? "default" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => handleRoleTemplateChange(template.name)}
-                  >
-                    {template.name}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
             {/* Categories */}
             <div className="space-y-3">
               <Label>Categories (Lĩnh vực chuyên môn)</Label>
@@ -183,7 +176,6 @@ export function ConfigureChatbotModal({
                   <Badge
                     key={category}
                     variant={selectedCategories.includes(category) ? "default" : "outline"}
-                    className="cursor-pointer"
                     onClick={() => toggleCategory(category)}
                   >
                     {category}
@@ -192,14 +184,20 @@ export function ConfigureChatbotModal({
               </div>
             </div>
 
-            {/* Assistant Name */}
-            <div className="space-y-2">
-              <Label htmlFor="assistant-name">Assistant Name</Label>
-              <Input
-                id="assistant-name"
-                defaultValue={chatbot.name}
-                placeholder="Nhập tên trợ lý..."
-              />
+            {/* Role Template */}
+            <div className="space-y-3">
+              <Label>Role Template</Label>
+              <div className="flex flex-wrap gap-2">
+                {roleTemplates.map((template) => (
+                  <Badge
+                    key={template.name}
+                    variant={selectedRole === template.name ? "default" : "outline"}
+                    onClick={() => handleRoleTemplateChange(template.name)}
+                  >
+                    {template.name}
+                  </Badge>
+                ))}
+              </div>
             </div>
 
             {/* Communication Language */}
@@ -234,25 +232,6 @@ export function ConfigureChatbotModal({
                   <SelectItem value="湾湾小何">湾湾小何</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-
-            {/* Greeting */}
-            <div className="space-y-2">
-              <Label htmlFor="greeting">Greeting Message</Label>
-              <Textarea
-                id="greeting"
-                placeholder="Xin chào! Tôi có thể giúp gì cho bạn?"
-                rows={2}
-              />
-            </div>
-
-            {/* Empty Response */}
-            <div className="space-y-2">
-              <Label htmlFor="empty-response">Empty Response</Label>
-              <Input
-                id="empty-response"
-                placeholder="Xin lỗi, tôi không hiểu câu hỏi của bạn..."
-              />
             </div>
 
             {/* Role Introduction */}
@@ -300,6 +279,25 @@ export function ConfigureChatbotModal({
                 rows={4}
                 className="bg-muted font-mono text-sm"
                 value={`System: You are ${chatbot.name}. ${roleIntroduction}\n\nFollow these guidelines:\n- Be helpful and friendly\n- Stay in character\n- Use the knowledge base when available`}
+              />
+            </div>
+
+            {/* Greeting */}
+            <div className="space-y-2">
+              <Label htmlFor="greeting">Greeting Message</Label>
+              <Textarea
+                id="greeting"
+                placeholder="Xin chào! Tôi có thể giúp gì cho bạn?"
+                rows={2}
+              />
+            </div>
+
+            {/* Empty Response */}
+            <div className="space-y-2">
+              <Label htmlFor="empty-response">Empty Response</Label>
+              <Input
+                id="empty-response"
+                placeholder="Xin lỗi, tôi không hiểu câu hỏi của bạn..."
               />
             </div>
 
